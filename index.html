@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SCP Foundation Access</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      width: 100vw; height: 100vh;
+      font-family: 'Courier New', monospace;
+      color: white;
+      overflow: hidden;
+      background: rgb(0, 0, 0);
+    }
+
+    /* Background image layer */
+    #bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: url('https://cdn.theatlantic.com/thumbor/9UG1L635AgQxaCeP6s-trUvcNJw=/1500x953/media/img/photo/2017/11/a-photo-trip-to-antarctica/a30_ANITALDB/original.jpg') center center / cover no-repeat;
+      filter: brightness(0.25) contrast(1.5);
+      z-index: 0;
+    }
+
+    #aurora {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: linear-gradient(120deg, rgba(0,255,220,0.1), rgba(0,180,150,0.07), rgba(0,255,220,0.1));
+      filter: blur(80px);
+      animation: auroraPulse 35s ease-in-out infinite alternate;
+      z-index: 1;
+      mix-blend-mode: screen;
+    }
+
+    @keyframes auroraPulse {
+      0% { opacity: 0.08; }
+      100% { opacity: 0.3; }
+    }
+
+    #fog {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: url('https://cdn.pixabay.com/photo/2017/01/20/00/30/fog-1990734_1280.png') repeat-x;
+      opacity: 0.09;
+      animation: fogMove 90s linear infinite;
+      z-index: 2;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    @keyframes fogMove {
+      0% { background-position: 0 bottom; }
+      100% { background-position: 1400px bottom; }
+    }
+
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .center-screen {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 4;
+    }
+
+    .logo {
+      width: 120px;
+      margin-bottom: 40px;
+      filter: drop-shadow(0 0 20px rgba(0,255,255,0.8));
+    }
+
+    .clean-input {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid white;
+      padding: 10px;
+      font-size: 1.2em;
+      color: #aaffff;
+      text-align: center;
+      outline: none;
+      width: 220px;
+    }
+
+    .clean-input::placeholder {
+      color: rgba(170,255,255,0.4);
+      letter-spacing: 2px;
+    }
+
+    .clean-input:focus {
+      border-bottom: 2px solid #00ffff;
+      color: #00ffff;
+    }
+
+    .hidden { display: none; }
+    .fade-in { animation: fade 1s ease forwards; }
+
+    @keyframes fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .scp-list button {
+      background: transparent;
+      border: 2px solid #00ffff;
+      padding: 10px 22px;
+      color: #00ffff;
+      font-size: 1em;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    .scp-list button:hover {
+      background: #00ffff;
+      color: black;
+    }
+
+    .scp-content {
+      max-width: 820px;
+      margin: 40px auto;
+      padding: 20px;
+      background: rgba(0,0,20,0.85);
+      font-size: 1em;
+      line-height: 1.6;
+      overflow-y: auto;
+      max-height: 90vh;
+      border: 1px solid #00ffff;
+      box-shadow: 0 0 20px #00ffff;
+    }
+
+    @media (max-width: 600px) {
+      .logo { width: 80px; }
+      .clean-input { width: 85%; }
+      .scp-content { font-size: 0.9em; padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="bg"></div>
+<div id="aurora"></div>
+<div id="fog"></div>
+<canvas id="snow"></canvas>
+
+<!-- First screen: Password -->
+<div id="screen1" class="center-screen">
+  <img src="https://upload.wikimedia.org/wikipedia/en/0/0a/Logo_of_the_SCP_Foundation.png" class="logo" />
+  <input type="password" id="mainPassword" class="clean-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkMainPassword()" />
+</div>
+
+<!-- Second screen: SCP List -->
+<div id="screen2" class="center-screen hidden fade-in">
+  <img src="https://upload.wikimedia.org/wikipedia/en/0/0a/Logo_of_the_SCP_Foundation.png" class="logo" />
+  <div class="scp-list">
+    <button onclick="openSCP999()">SCP-999</button>
+    <button onclick="openSCP096()">SCP-096</button> <!-- Added button for SCP-096 -->
+  </div>
+</div>
+
+<!-- Third screen: SCP-999 -->
+<div id="screen3" class="hidden fade-in">
+  <div class="scp-content">
+    <h2>SCP-999</h2>
+    <p><strong>Object Class:</strong> Safe</p>
+    <h3>Special Containment Procedures:</h3>
+    <p>SCP-999 is allowed to freely roam the facility should it desire to, but must stay in the vicinity of no fewer than one staff member at all times...</p>
+    <h3>Description:</h3>
+    <p>SCP-999 appears to be a large, amorphous, gelatinous mass of translucent orange slime weighing about 54 kg (120 lbs), with a consistency similar to that of peanut butter...</p>
+    <h3>Addendum 999-B: SCP-682 Test</h3>
+    <p>In an effort to curb SCP-682’s homicidal tendencies, SCP-999 was released into SCP-682’s containment chamber...</p>
+    <hr />
+    <p style="font-size: 0.8em;">Content from SCP Wiki, licensed under CC BY-SA 3.0</p>
+  </div>
+</div>
+
+<!-- Fourth screen: SCP-096 -->
+<div id="screen4" class="hidden fade-in">
+  <div class="scp-content">
+    <h2>SCP-096</h2>
+    <p><strong>Object Class:</strong> Euclid</p>
+    <h3>Special Containment Procedures:</h3>
+    <p>SCP-096 is to be contained in its cell at all times. No personnel are to view SCP-096’s face, whether directly, via video surveillance, or through photographs.</p>
+    <h3>Description:</h3>
+    <p>SCP-096 is a humanoid creature approximately 2.38 meters in height. The subject shows very little muscle mass, with preliminary analysis of body mass suggesting mild malnutrition. Arms are grossly out of proportion with the rest of the subject’s body, approximately 1.5 meters in length each.</p>
+    <p>SCP-096 will enter a stage of considerable emotional distress when someone views its face, whether directly or via a recording. Upon viewing, the person is to be designated SCP-096-1 and SCP-096 will enter a rage state and seek out SCP-096-1, killing them regardless of distance.</p>
+    <hr />
+    <p style="font-size: 0.8em;">Content from SCP Wiki, licensed under CC BY-SA 3.0</p>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById("snow");
+  const ctx = canvas.getContext("2d");
+  let W, H;
+
+  function resize() {
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = W;
+    canvas.height = H;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function createFlakeTexture() {
+    const size = 18;
+    const offCanvas = document.createElement('canvas');
+    offCanvas.width = size;
+    offCanvas.height = size;
+    const offCtx = offCanvas.getContext('2d');
+
+    const gradient = offCtx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+    gradient.addColorStop(0, 'rgba(255,255,255,0.9)');
+    gradient.addColorStop(0.7, 'rgba(255,255,255,0.2)');
+    gradient.addColorStop(1, 'rgba(255,255,255,0)');
+
+    offCtx.fillStyle = gradient;
+    offCtx.beginPath();
+    offCtx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+    offCtx.fill();
+
+    return offCanvas;
+  }
+
+  const flakeTexture = createFlakeTexture();
+
+  class Flake {
+    constructor() {
+      this.reset();
+    }
+
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.radius = 0.4 + Math.random() * 1.4;
+      this.speedY = 1.5 + Math.random() * 2.5;
+      this.speedX = -1.2 + Math.random() * 2.4; // diagonal wind
+      this.angle = Math.random() * Math.PI * 2;
+      this.angleSpeed = 0.05 + Math.random() * 0.05;
+      this.opacity = 0.4 + Math.random() * 0.6;
+      this.rotation = Math.random() * 360;
+      this.rotationSpeed = (Math.random() - 0.5) * 2.5;
+    }
+
+    update() {
+      this.y += this.speedY;
+      this.x += this.speedX + Math.sin(this.angle) * 0.2;
+      this.angle += this.angleSpeed;
+      this.rotation += this.rotationSpeed;
+
+      if (this.y > H + this.radius) this.y = -this.radius;
+      if (this.x > W + this.radius) this.x = -this.radius;
+      if (this.x < -this.radius) this.x = W + this.radius;
+    }
+
+    draw(ctx) {
+      ctx.save();
+      ctx.globalAlpha = this.opacity;
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation * Math.PI / 180);
+      const size = this.radius * 5;
+      ctx.drawImage(flakeTexture, -size/2, -size/2, size, size);
+      ctx.restore();
+    }
+  }
+
+  const flakes = [];
+  const flakeCount = 2000;
+  for(let i = 0; i < flakeCount; i++) {
+    flakes.push(new Flake());
+  }
+
+  function drawSnow() {
+    ctx.clearRect(0, 0, W, H);
+    for(let flake of flakes) {
+      flake.update();
+      flake.draw(ctx);
+    }
+    requestAnimationFrame(drawSnow);
+  }
+
+  drawSnow();
+
+  function checkMainPassword() {
+    const val = document.getElementById('mainPassword').value;
+    if (val === '517380') {
+      document.getElementById('screen1').classList.add('hidden');
+      document.getElementById('screen2').classList.remove('hidden');
+    } else {
+      alert('Access Denied');
+    }
+  }
+
+  function openSCP999() {
+    // Directly open SCP-999 content with no password
+    document.getElementById('screen2').classList.add('hidden');
+    document.getElementById('screen3').classList.remove('hidden');
+  }
+
+  function openSCP096() {
+    // Directly open SCP-096 content with no password
+    document.getElementById('screen2').classList.add('hidden');
+    document.getElementById('screen4').classList.remove('hidden');
+  }
+</script>
+</body>
+</html>
